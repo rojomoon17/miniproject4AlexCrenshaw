@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+vulnhub.db
+public/welcome.txt
+private/employee_notes.txt
+backups/vulnhub.sql.bak
+.venv/
+inf601-mp4-starter/
