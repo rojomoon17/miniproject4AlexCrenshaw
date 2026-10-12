@@ -74,6 +74,36 @@ response → either confirm the flag or adjust the payload and retry.
   files against `submission.txt` and the `check_flags.py` output to
   make sure nothing was transcribed incorrectly.
 
+## 6. Hands-on remediation practice (role reversed: human executes, AI guides)
+
+Unlike sections 1-5, where Claude Code executed the tool calls and the
+human directed and reviewed, this phase deliberately reversed those
+roles as additional hands-on practice beyond the assignment's required
+exploitation work.
+
+- **Goal:** apply and test a real fix for one vulnerability (IDOR) by
+  hand, rather than having the agent do it.
+- **Who did what:** Claude Code explained what needed to change and
+  which line it lived on, but the human wrote the code themselves in
+  their own editor (not copy-pasting a ready-made snippet) and ran
+  every shell command themselves (prefixed `!` in the session, so each
+  command appears as the human's own input, not a tool call the agent
+  executed).
+- **What happened:** the first hand-edit introduced a real bug — a SQL
+  query with two `?` placeholders but only one bound value — which
+  crashed the server with a 500 error. Claude Code read the Flask error
+  log and identified the exact cause; the human then corrected the edit
+  themselves and re-ran the restart/test commands. The corrected fix
+  was verified working: the exploit now returns 404 instead of the
+  flag, and the legitimate case (a user reading their own message)
+  still works. Afterward, the human reverted `app.py` back to its
+  original vulnerable state so the submitted app still reproduces all
+  6 flags; the fix is preserved separately as a reference file,
+  [`poc/idor_fix_reference.py`](poc/idor_fix_reference.py).
+- **Evidence:** two editor screenshots (the buggy attempt and the
+  corrected version) plus the before/after `curl` transcripts are in
+  [`poc/02_idor.md`](poc/02_idor.md#remediation--applied-and-manually-tested).
+
 See the README's [`## AI Usage`](README.md#ai-usage) section for the
 explicit split between what Claude Code executed and what the human
 directed, reviewed, and decided.

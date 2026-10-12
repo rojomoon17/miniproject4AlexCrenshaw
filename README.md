@@ -28,7 +28,7 @@ statement and findings.
 | Path | What it is |
 |---|---|
 | [`REPORT.md`](REPORT.md) | The pentest report: scope, methodology, findings, severity, remediation |
-| [`poc/`](poc/) | One file per finding with the exact request/payload/response that captured its flag |
+| [`poc/`](poc/) | One file per finding with the exact request/payload/response that captured its flag (plus `idor_fix_reference.py` and `screenshots/` from the hands-on IDOR fix exercise — see the AI Usage section) |
 | [`submission.txt`](submission.txt) | The 6 captured flags, one per line |
 | [`AGENTIC_WORKFLOW.md`](AGENTIC_WORKFLOW.md) | How this engagement was driven through Claude Code (goal → tool calls → review) |
 | `app.py`, `templates/`, `static/`, etc. | The unmodified Vuln Hub target app (instructor-provided starter) |
@@ -75,38 +75,54 @@ in `poc/` showing the exploit that produced it, per the assignment rules.
 
 ## AI Usage
 
-This project is AI-assisted by design per the assignment, and the goal
-is an honest accounting of what the AI (Claude Code) did versus what I
-directed and checked myself.
+This project was driven through Claude Code (Anthropic's agentic CLI).
+Below is an honest, specific split of what the AI did versus what I did.
 
-**What Claude Code did:**
-- Unzipped the starter files, set up the git repo, created the Python
-  virtual environment, installed dependencies, and started the Flask
-  app with the correct `FLAG_SEED`.
-- Performed recon (home page hints, `robots.txt`, login form inspection)
-  and drove every exploit over real HTTP requests (`curl`) — the SQL
-  injection payload, the IDOR request as a logged-in low-privilege user,
-  the forged `superadmin` cookie, the path-traversal file read, and the
-  stored-XSS payload against the guestbook — reading each flag directly
-  out of the app's live response, never from the filesystem or database.
-- Read `app.py`'s source **after** all six flags were already captured
-  black-box, to confirm root cause for the write-up.
-- Drafted `REPORT.md`, the six `poc/*.md` files, this README, and
-  `AGENTIC_WORKFLOW.md`.
+**What Claude Code did (autonomously, as the agent):**
+- Set up the repo: unzipped the starter files, initialized git, created
+  the Python virtual environment, installed dependencies, generated and
+  set `FLAG_SEED` from my FHSU username, and started the app.
+- Performed all recon and executed every exploit for all 6 findings —
+  crafting and sending the SQL injection payload, logging in as `alice`
+  and requesting message IDs for the IDOR, decoding and forging the
+  `superadmin` cookie for the broken-authorization finding, sending the
+  path-traversal request, and posting/polling the stored-XSS payload —
+  capturing every flag from a live HTTP response, not from the
+  filesystem or database.
+- Read `app.py`'s source only after all 6 flags were already captured
+  black-box, to write accurate root-cause and remediation explanations.
+- Drafted every document in this repo: `REPORT.md`, the six `poc/*.md`
+  files, this README, and `AGENTIC_WORKFLOW.md`.
+- Ran all `git add` / `git commit` / `git push` commands.
+- During my hands-on fix below, explained which line needed an
+  ownership check and why, and diagnosed the cause of a server error I
+  hit (read the Flask traceback in `restart.log` and identified that my
+  edit had two SQL placeholders but only one bound value).
 
-**What I did:**
-- Picked Track A, provided my FHSU username to generate the correct
-  seed, and supplied the location of the downloaded starter files.
-- Directed the overall order of attack (which vulnerability class to
-  pursue next) and reviewed every captured flag and every PoC
-  request/response before they were written into the report, confirming
-  they matched `check_flags.py`'s validation output.
-- Reviewed the final report and PoC write-ups for accuracy and can
-  explain every exploit (the SQL comment-out trick, the unsigned
-  base64 role cookie, the unescaped guestbook render, the unsanitized
-  `os.path.join` traversal, the `robots.txt`-advertised backup
-  directory, and the sequential-ID message lookup) at the Week 16
-  review.
-- Decided what belonged in the report vs. the PoC files, and confirmed
-  the authorization/scope statement is accurate (local-only, Vuln Hub
-  only).
+**What I (Alex) did:**
+- Chose Track A, provided my FHSU username, and pointed Claude Code to
+  the downloaded starter files.
+- Created the GitHub repository myself on github.com and gave Claude
+  Code the URL to push to.
+- Reviewed the captured flags, the report, and the PoC write-ups.
+- As additional hands-on practice beyond the required exploitation
+  work, I personally wrote and tested a real fix for the IDOR
+  vulnerability: I wrote the ownership-check code by hand in my own
+  editor (from Claude's explanation of what needed to change, not a
+  copy-pasted snippet), ran every restart/login/test command myself,
+  and hit a real bug along the way — my first attempt left out one of
+  the two values the fixed query needed, which Claude Code helped me
+  track down by reading the error log. I corrected it myself and
+  re-verified: the exploit now returns 404 instead of the flag, while
+  legitimate access to your own messages still works. Two screenshots
+  of my own editor (the buggy attempt and the corrected fix) and the
+  full before/after test transcript are in
+  [`poc/02_idor.md`](poc/02_idor.md#remediation--applied-and-manually-tested).
+  I then reverted my local `app.py` back to the original vulnerable
+  version so the submitted app still reproduces all 6 flags as
+  required — the fix itself is preserved for reference in
+  [`poc/idor_fix_reference.py`](poc/idor_fix_reference.py), not applied
+  to the live app in this repo.
+
+I can explain every exploit and the IDOR fix in detail at the Week 16
+review.

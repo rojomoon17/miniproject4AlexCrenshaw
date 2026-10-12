@@ -85,6 +85,16 @@ Logged in as the low-privilege account `alice`, message `#1` (owned by
 **Remediation:** Scope the query by both ID and the requesting user's
 identity (`WHERE id = ? AND owner = ?`); return 404 on mismatch.
 
+**Remediation verified hands-on:** as additional practice beyond the
+required exploitation work, this fix was implemented and tested on a
+local copy of the app — code edited and all commands run by hand, with
+Claude Code providing guidance and diagnosing one error hit along the
+way. After the fix, `alice` requesting `/messages/1` now gets
+`404 Not Found` instead of the flag, while her own `/messages/4` still
+works normally. Full before/after transcript, including the debugging
+of a self-introduced bug along the way, with editor screenshots, is in
+[`poc/02_idor.md`](poc/02_idor.md#remediation--applied-and-manually-tested).
+
 ### 3. Stored XSS — Guestbook Cookie Theft (Critical)
 
 Guestbook comments are rendered to all visitors — including a simulated
@@ -147,9 +157,3 @@ Prioritized fixes:
 4. Validate and canonicalize all filesystem paths built from user input,
    and never serve a directory meant to be private — closes findings
    5 and 6.
-
-## AI Usage in This Assessment
-
-See the [`## AI Usage`](README.md#ai-usage) section of the project
-README for a full accounting of what Claude Code did versus what the
-tester directed and verified.
