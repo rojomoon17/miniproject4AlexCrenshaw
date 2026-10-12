@@ -99,6 +99,11 @@ The current statement uses 2, and there are 1 supplied.
     row = get_db().execute(
 ```
 
+*(Verbatim from the error log at the time; the required header comment
+was added to `app.py` afterward, which shifts every line number below
+it down by 3 — the same `execute(` call is at line 268 in the current
+file.)*
+
 The query template had two `?` placeholders (`id = ?` and `owner = ?`)
 but the tuple I wrote only supplied one value. Claude Code pointed out
 which line and value was missing; I made the correction myself.

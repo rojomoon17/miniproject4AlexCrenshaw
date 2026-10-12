@@ -1,4 +1,7 @@
 # INF601 - Advanced Programming in Python
+# Alex Crenshaw
+# Mini Project 4
+#
 # Practice Pentest Target ("Vuln Hub") - INSTRUCTOR-PROVIDED CTF TARGET
 #
 # !!! INTENTIONALLY VULNERABLE SOFTWARE !!!

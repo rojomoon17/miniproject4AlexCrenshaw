@@ -6,6 +6,6 @@ private/employee_notes.txt
 backups/vulnhub.sql.bak
 .venv/
 inf601-mp4-starter/
-restart.log
+*.log
 *cookies*.txt
 alice2.txt

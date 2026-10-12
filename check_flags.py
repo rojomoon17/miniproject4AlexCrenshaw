@@ -1,4 +1,7 @@
 # INF601 - Advanced Programming in Python
+# Alex Crenshaw
+# Mini Project 4
+#
 # Self-check for the Vuln Hub pentest target (Mini Project 4, Track A).
 #
 # Checks each flag in your submission file against the flags Vuln Hub
